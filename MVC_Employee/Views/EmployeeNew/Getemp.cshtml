@@ -1,0 +1,142 @@
+﻿
+@{
+    ViewData["Title"] = "Getemp";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>searchbyid</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .first {
+            background-color: antiquewhite;
+            border: 1px solid black;
+            width: 1000px;
+            text-align: center;
+            height: 300px;
+            margin: auto;
+        }
+
+        button {
+            height: 25px;
+            width: 180px;
+        }
+
+        .second {
+            background-color: beige;
+            border: 1px solid black;
+            width: 1000px;
+            text-align: center;
+            margin: auto;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        #txtempid {
+            width: 25%;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box; /* Ensures padding is included in width */
+        }
+    </style>
+</head>
+<body>
+    <div class="first">
+        <br><br />
+        EMPLOYEE CODE
+        <input type="text" id="txtempid">
+        <br><br>
+        <button value="Search" onclick="search1()" id="btnsearch">
+            Search
+        </button>
+        <br><br>
+    </div>
+    <div class="second">
+        <table>
+            <tr></tr>
+            <tr>
+                <td>   Employee Name </td>
+                <td> <input type="text" id="txtempname">  </td>
+            </tr>
+            <tr>
+                <td>Designation</td>
+                <td><input type="text" id="txtempdes"></td>
+            </tr>
+            <tr>
+                <td>Department</td>
+                <td><input type="text" id="txtempdepname" disabled="true"></td>
+            </tr>
+
+        </table>
+    </div>
+    <script>
+        function search1() {
+            var EMPID = document.getElementById('txtempid').value;
+
+            // Fetch employee data using the updated fetchapiGet function
+            var d1 = fetchapiGet(EMPID);
+
+           
+            // Check if d1 is not null and has at least one employee
+            if (d1 && d1.length > 0) {
+                var employee = d1[0]; // Get the first employee from the list
+                var ename = document.getElementById('txtempname');
+                ename.value = employee.eName; // Use eName from EmployeeRespDto
+                var des = document.getElementById('txtempdes');
+                des.value = employee.designation; // Use designation from EmployeeRespDto
+                var depname = document.getElementById('txtempdepname');
+                depname.value = employee.department; // Use department from EmployeeRespDto
+            } else {
+                alert("Employee not found or an error occurred.");
+            }
+        }
+        function fetchapiGet(EMPID) {
+            var flag = "select_empcode";
+            var indata = flag + '$' + EMPID;
+            var data = null; // Initialize data as null
+
+            $.ajax({
+                type: "GET",
+                url: '/EmployeeNew/getAPIData',
+                data: { datas: indata },
+                async: false,
+                success: function (response) {
+                    data = response; // Directly assign the response
+                },
+                error: function (response) {
+                    console.error("Error fetching data:", response);
+                }
+            });
+            return data; // Return the data object
+        }
+</script>
+</body>
+</html>

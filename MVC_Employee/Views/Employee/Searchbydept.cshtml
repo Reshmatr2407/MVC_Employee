@@ -1,0 +1,213 @@
+﻿
+@{
+    ViewData["Title"] = "Searchbydept";
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>home</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style>
+
+        select {
+            width:200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007BFF; /* Blue border */
+            border-radius: 5px; /* Rounded corners */
+            background-color: #ffffff; /* White background */
+            color: #333; /* Dark text color */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: border-color 0.3s; /* Smooth transition for border color */
+        }
+
+            select:hover {
+                border-color: #0056b3; /* Darker blue on hover */
+            }
+
+            select:focus {
+                outline: none; /* Remove default outline */
+                border-color: #0056b3; /* Darker blue when focused */
+            }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box; /* Ensures padding is included in width */
+        }
+    </style>
+
+
+
+</head>
+<body>
+
+    <div>
+        <br />
+        <br />
+        <label for="DdlDept">Select Department name:</label>
+        <select id="DdlDept" onchange="getEmployee()">
+        </select>
+
+    </div>
+    <table id="reportTable">
+        <thead>
+            <!-- Headers will be dynamically added here -->
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <script>
+
+            window.onload = fetchapiGet;
+                function fetchapiGet() {
+                    debugger;
+            var flag = "select_departments";
+                    // var para1 = "1";
+                    // var para2 = "1";
+            var indata = flag + "$" + "1";
+                    var data = '';
+                    $.ajax({
+                        type: "GET",
+                        url: '/Employee/getAPIData',
+                        data: { datas: indata },
+                        async: false,
+                        success: function (response) {
+                            data = JSON.parse(response);
+                        },
+                        error: function (response) {
+                            check = 0;
+                        }
+                    });
+                  LoadDropDown(data);
+
+                }
+
+
+                function LoadDropDown(data) {
+                    
+                    Departments = document.getElementById('DdlDept');
+                    const options = formatDataAsArray(data);
+                    Departments.innerHTML = '';
+                    options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.text = option.text;
+                        Departments.add(optionElement);
+                    });
+                }
+
+                function formatDataAsArray(data) {
+                 
+                    if (Array.isArray(data) && data.length > 0) {
+                        return data.map(item => ({
+                    value: item["department"],
+                    text: item["department"] 
+                        }));
+                    } else {
+                        return [];
+                    }
+                }
+//-------------------------------------------------------------------------------
+        function getEmployee() {
+            
+            Departments = document.getElementById('DdlDept');
+            fetchapiGet1(Departments.value);
+
+        }
+                 function fetchapiGet1(dept) {
+                   
+            var flag = "select_depwise";
+                    var indata = flag+'$'+dept;
+                    var data = '';
+                    $.ajax({
+                        type: "GET",
+                        url: '/Employee/getAPIData',
+                        data: { datas: indata },
+                        async: false,
+                        success: function (response) {
+                            data = JSON.parse(response);
+                            LoadReport(data);
+                        },
+                        error: function (response) {
+                            check = 0;
+                        }
+                    });
+                }
+        function LoadReport(data) {
+            debugger;
+            const reportTable = document.getElementById('reportTable');
+            const tbody = reportTable.querySelector('tbody');
+            const thead = reportTable.querySelector('thead');
+
+            // Clear existing rows and headers
+            tbody.innerHTML = '';
+            thead.innerHTML = '';
+
+            // Check if data is valid
+            if (Array.isArray(data) && data.length > 0) {
+                // Create table headers dynamically
+                const headerRow = document.createElement('tr');
+                Object.keys(data[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key; // Use the key as the header
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+
+                // Populate the table with new rows
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    // Create cells for each property in the item
+                    Object.values(item).forEach(value => {
+                        
+                        const cell = document.createElement('td');
+                        cell.textContent = value; // Set the cell text to the value
+                        row.appendChild(cell);
+                    });
+
+                    // Append the row to the table body
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+    </script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,126 @@
+﻿
+@{
+    ViewData["Title"] = "Insertimage";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Insert Image Details</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+            input[type="submit"]:hover {
+                background-color: #4cae4c;
+            }
+
+    </style>
+</head>
+<body>
+    <h1>Insert Image</h1>
+
+    <label>Image Code:</label>
+    <input type="number" id="img_code">
+    <br>
+    <br>
+
+    <label>Browse image:</label>
+    <input type="file" id="imgfile" accept="image/*">
+   
+    <input type="submit" value="Insert Image" onclick="insert()">
+
+    <script>
+        function insert() {
+            debugger;
+            var img_code = document.getElementById('img_code').value;
+            var imgfile = document.getElementById('imgfile');
+
+            // Check if the file input is not null and has files
+            if (imgfile && imgfile.files.length > 0) {
+                var file = imgfile.files[0]; // Get the first selected file
+                var filepath = "D:\\images\\" + file.name; // Get the file name (not the full path)
+            }
+            fetchapiPost(img_code, filepath);
+        }
+
+        function fetchapiPost(img_code, filepath) {
+            debugger;
+            var flag = "insert_1";
+            var indata = flag + '$' + img_code + '^' + filepath;
+            var data = '';
+            $.ajax({
+                type: "POST",
+                url: '/Employee/postAPIImage',
+                data: { datas: indata },
+                async: false,
+                success: function (response) {
+                    debugger;
+                    data = JSON.parse(response);
+                    alert("Successfully inserted ");
+
+                },
+                error: function (response) {
+                    check = 0;
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
+
+
+
+
