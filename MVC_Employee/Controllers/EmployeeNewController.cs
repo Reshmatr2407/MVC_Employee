@@ -18,53 +18,68 @@ namespace MVC_Employee.Controllers
         {
             return View();
         }
-
-        [HttpPost]
-        public async Task<IActionResult> postAPIData([FromBody] EmployeePostReqModel employeePostReq) // Get API Response
+        public IActionResult Searchddl()
         {
-            // Define the API endpoint URL
-            string ApiPath = "https://localhost:7057/api/Employee/PostDetails2/";
-
-            // Initialize a variable to hold the response data
-            var data = "";
-
-            // Create an instance of HttpClient to make the HTTP request
-            using (HttpClient client = new HttpClient())
-            {
-                // Serialize the data into JSON format
-                string content = JsonConvert.SerializeObject(employeePostReq);
-
-                // Convert the JSON string to a byte array
-                var buffer = Encoding.UTF8.GetBytes(content);
-
-                // Create ByteArrayContent from the byte array
-                var byteContent = new ByteArrayContent(buffer);
-
-                // Set the content type to JSON
-                byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-
-                // Make the POST request to the API
-                HttpResponseMessage response2 = await client.PostAsync(ApiPath, byteContent);
-
-                // Check if the response indicates success
-                if (response2.IsSuccessStatusCode)
-                {
-                    // Read the response content as a string
-                    data = await response2.Content.ReadAsStringAsync();
-                    return Ok(data); // Return the response data
-                }
-            }
-            return BadRequest("Error occurred while inserting employee data."); // Return an error response
+            return View();
         }
 
-        public List<EmployeeRespModel> getAPIData(string datas) // Get API Response
+        // from model
+
+
+        [HttpPost]
+            public async Task<IActionResult> postAPIData([FromBody] EmployeePostReqDto employeePostReq) // Get API Response
+            {
+                // Check if the model state is valid
+                if (!ModelState.IsValid)
+                {
+                    // Return a bad request with the validation errors
+                    return BadRequest(ModelState);
+                }
+
+                // Define the API endpoint URL
+                string ApiPath = "http://localhost:5120/api/Employee/PostDetails2/";
+
+                // Initialize a variable to hold the response data
+                var data = "";
+
+                // Create an instance of HttpClient to make the HTTP request
+                using (HttpClient client = new HttpClient())
+                {
+                    // Serialize the data into JSON format
+                    string content = JsonConvert.SerializeObject(employeePostReq);
+
+                    // Convert the JSON string to a byte array
+                    var buffer = Encoding.UTF8.GetBytes(content);
+
+                    // Create ByteArrayContent from the byte array
+                    var byteContent = new ByteArrayContent(buffer);
+
+                    // Set the content type to JSON
+                    byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+                    // Make the POST request to the API
+                    HttpResponseMessage response2 = await client.PostAsync(ApiPath, byteContent);
+
+                    // Check if the response indicates success
+                    if (response2.IsSuccessStatusCode)
+                    {
+                        // Read the response content as a string
+                        data = await response2.Content.ReadAsStringAsync();
+                        return Ok(data); // Return the response data
+                    }
+                }
+                return BadRequest("Error occurred while inserting employee data."); // Return an error response
+            }
+        
+
+        public List<EmployeeModel> getAPIData(string datas) // Get API Response
         {
             // Split the input string 'datas' using '$' as the delimiter
             string[] datastring = datas.Split("$");
 
             // Construct the API path using the second and first elements of the split array
-            string ApiPath = "https://localhost:7057/api/Employee/GetDetails2/" + datastring[0] + "/" + datastring[1] + "/1";
-
+            string ApiPath = "http://localhost:5120/api/Employee/GetDetails2/" + datastring[0] + "/" + datastring[1] + "/1";
+      
             using (var client = new HttpClient())
             {
                 // Make a GET request to the API and wait for the result
@@ -77,7 +92,7 @@ namespace MVC_Employee.Controllers
                     var data = result.Content.ReadAsStringAsync().Result;
 
                     // Deserialize the JSON response into a list of EmployeeRespDto
-                    var employee = JsonConvert.DeserializeObject<List<EmployeeRespModel>>(data);
+                    var employee = JsonConvert.DeserializeObject<List<EmployeeModel>>(data);
                     return employee;
                 }
             }

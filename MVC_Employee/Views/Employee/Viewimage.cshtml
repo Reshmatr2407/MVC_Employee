@@ -21,7 +21,7 @@
             border: 1px solid black;
             width: 1000px;
             text-align: center;
-            height: 300px;
+            height: auto;
             margin:auto;
         }
         button {
@@ -77,31 +77,31 @@
             Search
         </button>
         <br><br>
-        <img height="300px" width="300px" alt="image here" id="img1" />
+        <img height="300px" width="300px" alt="image here" id="imageElement" />
     </div>
     
     <script>
         function search1() {
-            debugger;
+            
             var ID = document.getElementById('txtimgid').value;
 
             var d1 = fetchapiGet(ID);
 
-            var img = document.getElementById('img1');
-            img.src = d1[0].img;
-            var des = document.getElementById('txtempdes');
-            des.value = d1[0].designation;
-            var depname = document.getElementById('txtempdepname');
-            depname.value = d1[0].department;
+            // var img = document.getElementById('img1');
+            // img.src = d1[0].img;
+            // var des = document.getElementById('txtempdes');
+            // des.value = d1[0].designation;
+            // var depname = document.getElementById('txtempdepname');
+            // depname.value = d1[0].department;
 
         }
 
 
-        function fetchapiGet(EMPID) {
-            debugger;
-            var flag = "select_empcode";
+        function fetchapiGet(ImgID) {
+            
+            var flag = "select_img";
             //concatenating EMP and flag with a '$' separator
-            var indata = flag + '$' +  EMPID;
+            var indata = flag + '$' + ImgID;
             // Initializing a variable to hold the response data
             var data = '';
              // Making an AJAX GET request using jQuery
@@ -109,7 +109,7 @@
                 // The type of request
                 type: "GET",
                 // The URL to which the request is sent
-                url: '/Employee/getAPIData',
+                url: '/Employee/getAPIImage',
                 // The data to be sent to the server, wrapped in an object
                 data: { datas: indata },
                 // This makes the request synchronous
@@ -117,7 +117,11 @@
                 // This function is called if the request is successful
                 success: function (response) {
                     // Parsing the JSON response from the server
+                    debugger;
                     data = JSON.parse(response);
+                    console.log("Parsed data:", data); // Log the parsed data
+                    console.log("Parsed data:", data[0].image);
+                    loadimage(data[0].image); // Pass the Base64 image string to loadimage
                 },
                 // This function is called if the request fails
                 error: function (response) {
@@ -127,6 +131,13 @@
             });
             // Returning the data variable
             return data;
+        }
+        function loadimage(imageData) {
+            const imgElement = document.getElementById('imageElement'); // Get the image element by ID
+            if (imgElement) {
+                // Set the src attribute to the Base64 string
+                imgElement.src = `data:image/jpeg;base64,${imageData}`; // Assuming the image is in JPEG format
+            }
         }
     </script>
 </body>

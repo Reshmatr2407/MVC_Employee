@@ -6,11 +6,11 @@ namespace MVC_Employee.Models
     {
         //[Required(ErrorMessage = "Employee Code is required.")]
         //[Range(1, int.MaxValue, ErrorMessage = "Employee Code must be a positive number.")]
-        public int empId { get; set; }
+        public string empCode { get; set; }
 
         //[Required(ErrorMessage = "Employee Name is required.")]
         //[StringLength(100, ErrorMessage = "Employee Name cannot exceed 100 characters.")]
-        public string empName { get; set; }
+        public string eName { get; set; }
 
         //[Required(ErrorMessage = "Designation is required.")]
         //[StringLength(50, ErrorMessage = "Designation cannot exceed 50 characters.")]

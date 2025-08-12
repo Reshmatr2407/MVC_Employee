@@ -29,7 +29,7 @@ namespace MVC_Employee.Controllers
             string[] datastring = datas.Split("$");
 
             // Construct the API path using the second and first elements of the split array
-            string ApiPath = "https://localhost:7057/api/Employee/GetDetails2/" + datastring[0] + "/" + datastring[1] + "/1";
+            string ApiPath = "http://localhost:5120/api/Employee/GetDetails2/" + datastring[0] + "/" + datastring[1] + "/1";
             // Create an instance of HttpClient to make the HTTP request
             using (var client = new HttpClient())
             {
@@ -61,7 +61,7 @@ namespace MVC_Employee.Controllers
         public async Task<dynamic> postAPIData(string datas)     //Get API Response
         {
             // Define the API endpoint URL
-            string ApiPath = "https://localhost:7057/api/Employee/PostDetails2/";
+            string ApiPath = "http://localhost:5120/api/Employee/PostDetails2/";
             // Initialize a variable to hold the response data
             var data = "";
             // Split the input string 'datas' using '$' as the delimiter
@@ -104,7 +104,7 @@ namespace MVC_Employee.Controllers
         public async Task<dynamic> putAPIData(string datas)     //Get API Response
         {
             // Define the API endpoint URL
-            string ApiPath = "https://localhost:7057/api/Employee/PutDetails1/";
+            string ApiPath = "http://localhost:5120/api/Employee/PutDetails1/";
             // Initialize a variable to hold the response data
             var data = "";
             // Split the input string 'datas' using '$' as the delimiter
@@ -150,7 +150,7 @@ namespace MVC_Employee.Controllers
             string[] datastring = datas.Split("$");
 
             // Construct the API path using the second and first elements of the split array
-            string ApiPath = "https://localhost:7057/api/Employee/DeleteDetails1/" + datastring[0] + "/" + datastring[1];
+            string ApiPath = "http://localhost:5120/api/Employee/DeleteDetails1/" + datastring[0] + "/" + datastring[1];
             // Create an instance of HttpClient to make the HTTP request
             using (var client = new HttpClient())
             {
@@ -180,7 +180,7 @@ namespace MVC_Employee.Controllers
         public async Task<dynamic> postAPIImage(string datas)     //Get API Response
         {
             // Define the API endpoint URL
-            string ApiPath = "https://localhost:7057/api/Employee/PostImage";
+            string ApiPath = "http://localhost:5120/api/Employee/PostImage";
             // Initialize a variable to hold the response data
             var data = "";
             // Split the input string 'datas' using '$' as the delimiter
@@ -224,5 +224,33 @@ namespace MVC_Employee.Controllers
         {
             return View();
         }
+        public string getAPIImage(string datas)     //Get API Response
+        {
+            // Split the input string 'datas' using '$' as the delimiter
+            string[] datastring = datas.Split("$");
+
+            // Construct the API path using the second and first elements of the split array
+            string ApiPath = "http://localhost:5120/api/Employee/GetImage/" + datastring[0] + "/" + datastring[1] ;
+            // Create an instance of HttpClient to make the HTTP request
+            using (var client = new HttpClient())
+            {
+                // Initialize a variable to hold the response data
+                string data = "";
+                // Set the base address of the HttpClient to the constructed API path
+                client.BaseAddress = new Uri(ApiPath);
+                // Make a GET request to the API and wait for the result
+
+                HttpResponseMessage result = client.GetAsync(client.BaseAddress).Result;
+                // Check if the response indicates success
+                if (result.IsSuccessStatusCode)
+                {
+                    // Read the response content as a string
+                    data = result.Content.ReadAsStringAsync().Result;
+                }
+                // Return the response data 
+                return data;
+            }
+        }
+
     }
 }

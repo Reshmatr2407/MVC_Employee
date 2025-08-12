@@ -1,0 +1,263 @@
+﻿
+@{
+    ViewData["Title"] = "Searchddl";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>home</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <style>
+
+        select {
+            width:200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007BFF; /* Blue border */
+            border-radius: 5px; /* Rounded corners */
+            background-color: #ffffff; /* White background */
+            color: #333; /* Dark text color */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: border-color 0.3s; /* Smooth transition for border color */
+        }
+
+            select:hover {
+                border-color: #0056b3; /* Darker blue on hover */
+            }
+
+            select:focus {
+                outline: none; /* Remove default outline */
+                border-color: #0056b3; /* Darker blue when focused */
+            }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box; /* Ensures padding is included in width */
+        }
+    </style>
+
+
+
+</head>
+<body>
+
+    <div>
+        <br />
+        <br />
+        <label for="Employees">Select Employee Code:</label>
+        <select id="Employees" onchange="getEmployee()">
+        </select>
+
+    </div>
+
+    <table>
+
+        <tr>
+            <td>Employee ID</td>
+            <td><input type="text" id="txtempid"></td>
+        </tr>
+        <tr>
+            <td>Employee Name</td>
+            <td><input type="text" id="txtempname"></td>
+        </tr>
+        <tr>
+            <td>Designation</td>
+            <td><input type="text" id="txtempdes"></td>
+        </tr>
+        <tr>
+            <td>Department</td>
+            <td><input type="text" id="txtempdept"></td>
+        </tr>
+
+    </table>
+    <button value="Update" onclick="updateemp()" id="btnupdate">
+        Update
+    </button>
+    <button value="Delete" onclick="deleteemp()" id="btndelete">
+        Delete
+    </button>
+    <script>
+                // ---------------display in drop down-----------------
+                    window.onload = fetchapiGet;
+                        function fetchapiGet() {
+                       
+                    var flag = "selectall";
+                            // var para1 = "1";
+                            // var para2 = "1";
+                    var indata = flag + "$" + "1";
+                            var data = '';
+                            $.ajax({
+                                type: "GET",
+                                url: '/EmployeeNew/getAPIData',
+                                data: { datas: indata },
+                                async: false,
+                                success: function (response) {
+                                    debugger;
+
+                                  LoadDropDown(response);
+                                },
+                                error: function (response) {
+                                    check = 0;
+                                }
+                            });
+                          
+
+                        }
+                        function LoadDropDown(data) {
+                            debugger;
+                            Employees = document.getElementById('Employees');
+                            const options = formatDataAsArray(data);
+                            Employees.innerHTML = '';
+                            options.forEach(option => {
+                                const optionElement = document.createElement('option');
+                                optionElement.value = option.value;
+                                optionElement.text = option.text;
+                                Employees.add(optionElement);
+                            });
+                        }
+                        function formatDataAsArray(data) {
+                            debugger;
+                            if (Array.isArray(data) && data.length > 0) {
+                                return data.map(item => ({
+                    value: item["empCode"],
+                    text: item["eName"] + '--' + item["empCode"]
+                                }));
+                            } else {
+                                return [];
+                            }
+                        }
+        //------------------------display in text boxes---------------------------------------
+                        function getEmployee() {
+                    debugger;
+                    Employees = document.getElementById('Employees');
+                    search1(Employees.value);
+                }
+                        function search1(empcode) {
+                            
+                            debugger;
+                            var d1 = fetchapiGet1(empcode);
+                            debugger;
+                            var empid  = document.getElementById('txtempid');
+                            empid.value = d1[0].empCode;
+                            var ename = document.getElementById('txtempname');
+                            ename.value = d1[0].eName;
+                            var des = document.getElementById('txtempdes');
+                            des.value = d1[0].designation;
+                            var depname = document.getElementById('txtempdept');
+                            depname.value = d1[0].department;
+
+                        }
+                        function fetchapiGet1(empid) {
+                            debugger;
+                            var flag = "select_empcode";
+                            var indata = flag + '$' + empid;
+                            var data = '';
+            $.ajax({
+                type: "GET",
+                url: '/EmployeeNew/getAPIData',
+                data: { datas: indata },
+                async: false,
+                success: function (response) {
+                    debugger;
+                    data = response; // Directly assign the response
+                },
+                error: function (response) {
+                    console.error("Error fetching data:", response);
+                }
+            });
+                            debugger;
+            return data; // Return the data object
+        }
+                        
+        // -------------------------For Updating----------------------------
+                function updateemp() {
+                    debugger;
+                    Employees = document.getElementById('Employees');
+                    emp_code=Employees.value;
+                        fetchapiUpdate(emp_code);
+                    }
+
+
+
+
+                function fetchapiUpdate(emp_code) {
+                    debugger;
+                    var flag = "update_1";
+                    var ename = document.getElementById('txtempname');
+                    var des = document.getElementById('txtempdes');
+                    var depname = document.getElementById('txtempdept');
+                    var indata = flag + '$' + emp_code + '/' + ename.value + '/' + des.value + '/' + depname.value;
+                    var data = '';
+                    $.ajax({
+                        type: "PUT",
+                        url: '/Employee/putAPIData',
+                        data: { datas: indata },
+                        async: false,
+                        success: function (response) {
+                          //  data = JSON.parse(response);
+                            alert("Successfully updated ");
+                        },
+                        error: function (response) {
+                            check = 0;
+                        }
+                    });
+                }
+        // -----------------------For deleting------------------
+                function deleteemp() {
+                    debugger;
+                    Employees = document.getElementById('Employees');
+                    emp_code = Employees.value;
+                    fetchapiDelete(emp_code);
+                }
+                function fetchapiDelete(emp_code) {
+                    debugger;
+                    var flag = "delete_1";
+                    var indata = flag + '$' + emp_code;
+                    var data = '';
+                    $.ajax({
+                        type: "DELETE",
+                        url: '/Employee/deleteAPIData',
+                        data: { datas: indata },
+                        async: false,
+                        success: function (response) {
+                            alert(response);
+                        },
+                        error: function (response) {
+                            check = 0;
+                        }
+                    });
+                }
+
+
+    </script>
+</body>
+</html>
+
